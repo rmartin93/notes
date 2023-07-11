@@ -4,31 +4,40 @@ import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
 import Link from "next/link";
 import Date from "../components/date";
-import clientPromise from "../lib/mongodb";
+import useSWR from "swr";
 
 export async function getStaticProps() {
-	const client = await clientPromise;
-	const collection = client.db("test-db").collection("test-collection");
-	const result = await collection.find({}).toArray();
-
 	const allPostsData = getSortedPostsData();
 	return {
 		props: {
 			allPostsData,
-			result: JSON.stringify(result),
 		},
 	};
 }
 
-export default function Home({ allPostsData, result }) {
-	console.log("result", JSON.parse(result)[0]);
-	const name = JSON.parse(result)[0].name;
+export default function Home({ allPostsData }) {
+	const fetcher = (...args) => fetch(...args).then((res) => res.json());
+	const { data, error } = useSWR("/api/test", fetcher);
+	console.log("data", data);
+	if (data) {
+		data.map((note) => {
+			console.log("note", note._id);
+		});
+	}
+
 	return (
 		<Layout home>
 			<Head>
 				<title>{siteTitle}</title>
 			</Head>
-			<p>{name}</p>
+			<ul style={{ border: "2px solid green" }}>
+				{!data && "Loading..."}
+				{error && "Error loading data."}
+				{data &&
+					data.map((note) => {
+						return <li key={note._id}>{note.name}</li>;
+					})}
+			</ul>
 			<section className={utilStyles.headingMd}>
 				<p>[Your Self Introduction]</p>
 				<p>
