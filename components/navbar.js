@@ -3,16 +3,13 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 export default function NavBar() {
 	const { user } = useUser();
 	return (
-		<nav className="navbar navbar-expand-lg">
+		<nav className="navbar">
 			<div className="container">
 				<Link className="navbar-brand" href="/">
 					Notes
 				</Link>
-				<div
-					className="collapse navbar-collapse justify-content-end"
-					id="navbarNav"
-				>
-					<ul className="navbar-nav align-items-center gap-3">
+				<div className="d-flex justify-content-end" id="navbarNav">
+					<ul className="navbar-nav align-items-center gap-3 flex-row">
 						<li className="nav-item active"></li>
 						{user ? (
 							<>
